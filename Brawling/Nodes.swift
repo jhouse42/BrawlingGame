@@ -18,4 +18,6 @@ class ProjectileNode: SKSpriteNode {
     
     var damage = 0
     
+    var player: Player?
+    
 }

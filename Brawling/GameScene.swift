@@ -26,6 +26,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         self.physicsBody = SKPhysicsBody(edgeLoopFromRect: view.frame)
         
+        
+        
     }
    
     override func update(currentTime: CFTimeInterval) {
@@ -43,7 +45,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let projectile = contact.bodyA.node as ProjectileNode
             let pNode = contact.bodyB.node as PlayerNode
             
-            pNode.player?.attackWithDamage(projectile.damage)
+           
+            let healthpoints = pNode.player?.attackWithDamage(projectile.damage)
+            
+            if healthpoints <= 0 {
+                
+                projectile.player?.killCount++
+                pNode.player?.deathCount++
+                pNode.removeFromParent()
+                playerReady(pNode.player!)
+            }
+            
+            
             
             projectile.removeFromParent()
             
@@ -56,9 +69,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let projectile = contact.bodyB.node as ProjectileNode
             let pNode = contact.bodyA.node as PlayerNode
             
-            pNode.player?.attackWithDamage(projectile.damage)
+            let healthpoints = pNode.player?.attackWithDamage(projectile.damage)
             
-            projectile.removeFromParent()
+            if healthpoints <= 0 {
+                
+                projectile.player?.killCount++
+                pNode.player?.deathCount++
+                pNode.removeFromParent()
+                playerReady(pNode.player!)
+            
+            }
             
         } else if contact.bodyB.categoryBitMask == NodeType.Projectile.rawValue {
             
@@ -126,9 +146,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             case "normal" :
                 
 //                pNode.physicsBody?.applyForce(CGVectorMake(-1000, 0))
+              
                 
                 var projectile = ProjectileNode(color: UIColor.blueColor(), size: CGSizeMake(10, 10))
-                
+                projectile.player = player
                 projectile.damage = 10
                 projectile.physicsBody = SKPhysicsBody(rectangleOfSize: projectile.size)
                 projectile.physicsBody?.affectedByGravity = false
@@ -151,7 +172,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //                pNode.physicsBody?.applyForce(CGVectorMake(1000, 0))
                
                 var projectile = ProjectileNode(color: UIColor.greenColor(), size: CGSizeMake(20, 20))
-                
+                projectile.player = player
                 projectile.damage = 35
                 projectile.physicsBody = SKPhysicsBody(rectangleOfSize: projectile.size)
                 projectile.physicsBody?.affectedByGravity = false
@@ -191,6 +212,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         var pNode = PlayerNode(color: UIColor.redColor(), size: CGSizeMake(30, 30))
         
+        player.healthPoints = 100
         pNode.player = player
         pNode.position = CGPointMake(200, 200)
         pNode.physicsBody = SKPhysicsBody(rectangleOfSize: pNode.size)
